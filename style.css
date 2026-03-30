@@ -1,0 +1,118 @@
+body { font-family: sans-serif; background: #fafafa; margin: 0; }
+.logo { font-weight: bold; letter-spacing: 3px; font-size: 24px; text-align: center; padding: 20px; }
+
+/* Home */
+.home { background: url('https://images.unsplash.com/photo-1541643600914-78b084683601') center/cover; height: 100vh; color: white; text-align: center; }
+.overlay { background: rgba(0,0,0,0.6); height: 100%; display: flex; flex-direction: column; justify-content: center; }
+.btn-gold { background: #d4af37; color: white; padding: 15px 30px; text-decoration: none; margin: 10px; display: inline-block; }
+.btn-white { border: 1px solid white; color: white; padding: 15px 30px; text-decoration: none; margin: 10px; display: inline-block; }
+
+/* Grid */
+.product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
+.product-card { background: white; border-radius: 8px; overflow: hidden; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.product-card img { width: 100%; height: 150px; object-fit: contain; }
+.p-info h4 { margin: 5px 0; font-size: 14px; }
+.p-info p { color: #d4af37; font-weight: bold; margin: 5px 0; }
+
+.shop-nav { background: white; padding: 15px; position: sticky; top: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; }
+#search { width: 90%; padding: 10px; border-radius: 20px; border: 1px solid #ddd; }
+
+.brands-container { display: grid; grid-template-columns: 1fr; gap: 10px; padding: 20px; }
+.brand-card { background: white; padding: 30px; text-align: center; border: 1px solid #eee; cursor: pointer; }
+/* Style Général */
+body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #fdfdfd; color: #333; }
+.logo { font-weight: 800; letter-spacing: 3px; font-size: 20px; }
+
+/* Navigation */
+.shop-nav { background: white; padding: 15px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #eee; text-align: center; }
+.nav-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+#searchInput { width: 90%; padding: 12px; border-radius: 25px; border: 1px solid #d4af37; outline: none; }
+
+/* Grilles */
+.brands-grid, .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
+
+/* Cartes */
+.brand-card, .product-card { 
+    background: white; border: 1px solid #eee; border-radius: 12px; padding: 15px; 
+    text-align: center; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+}
+.brand-card:hover { border-color: #d4af37; transform: translateY(-3px); }
+
+/* Images Parfums */
+.p-img { height: 160px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+.p-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+.price { color: #d4af37; font-weight: bold; font-size: 16px; margin: 5px 0; }
+
+/* Responsive PC */
+@media (min-width: 768px) {
+    .brands-grid { grid-template-columns: repeat(5, 1fr); }
+    .product-grid { grid-template-columns: repeat(4, 1fr); }
+}
+/* Couleurs et Base */
+:root { --gold: #d4af37; --dark: #111; }
+body { font-family: sans-serif; margin: 0; background: #fff; }
+
+/* Navigation */
+.search-nav { padding: 15px; background: #fff; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
+.nav-header { display: flex; justify-content: space-between; align-items: center; }
+.brand-title { font-weight: bold; letter-spacing: 2px; }
+.back-link { text-decoration: none; color: var(--gold); font-weight: bold; }
+#searchInput { width: 100%; padding: 12px; margin-top: 10px; border-radius: 25px; border: 1px solid #ddd; outline: none; }
+
+/* Grilles */
+.brands-grid, .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
+@media (min-width: 768px) {
+    .brands-grid { grid-template-columns: repeat(5, 1fr); }
+    .product-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Cartes */
+.brand-card, .product-card { border: 1px solid #eee; padding: 15px; border-radius: 8px; text-align: center; }
+.brand-card { cursor: pointer; transition: 0.3s; }
+.brand-card:hover { border-color: var(--gold); background: #fafafa; }
+
+/* Images */
+.img-container { height: 150px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+.img-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+.price { color: var(--gold); font-weight: bold; margin: 5px 0; }
+h4 { font-size: 13px; margin: 5px 0; height: 32px; overflow: hidden; }
+/* Style du bouton principal (Doré) */
+.btn-gold {
+    background-color: #d4af37;
+    color: white;
+    padding: 12px 25px;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+    font-weight: bold;
+    transition: 0.3s;
+    border: none;
+    margin: 10px;
+}
+
+.btn-gold:hover {
+    background-color: #b8952e;
+    transform: translateY(-2px);
+}
+
+/* Style du bouton secondaire (Contour blanc/doré) */
+.btn-outline {
+    background-color: transparent;
+    color: #d4af37;
+    border: 2px solid #d4af37;
+    padding: 10px 23px;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+    font-weight: bold;
+    transition: 0.3s;
+    margin: 10px;
+}
+
+.btn-outline:hover {
+    background-color: #d4af37;
+    color: white;
+    transform: translateY(-2px);
+}

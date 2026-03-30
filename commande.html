@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commande | Hamid Fragrance</title>
+    <style>
+        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; padding: 20px; }
+        .form-card { max-width: 450px; margin: auto; background: #0a0a0a; padding: 30px; border: 1px solid #d4af37; border-radius: 8px; }
+        input, textarea { width: 100%; padding: 12px; margin: 15px 0; background: #111; border: 1px solid #333; color: #fff; box-sizing: border-box; }
+        .btn-send { width: 100%; background: #d4af37; color: #000; border: none; padding: 15px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        label { color: #d4af37; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+    <div class="form-card">
+        <h2 style="color: #d4af37; text-align: center; margin-top: 0;">LIVRAISON</h2>
+        <form action="https://formspree.io/f/mvzvajog" method="POST" id="orderForm">
+            <label>Nom Complet</label>
+            <input type="text" name="Nom" required>
+
+            <label>Téléphone</label>
+            <input type="tel" name="Tel" required>
+
+            <label>Adresse & Code Postal</label>
+            <input type="text" name="Adresse" required>
+
+            <label>Message / Note</label>
+            <textarea name="Note"></textarea>
+
+            <input type="hidden" name="Produits" id="hiddenProd">
+            <input type="hidden" name="Total" id="hiddenTotal">
+
+            <button type="submit" class="btn-send">CONFIRMER LA COMMANDE</button>
+        </form>
+    </div>
+
+    <script>
+        window.onload = function() {
+            let p = JSON.parse(localStorage.getItem('panier')) || [];
+            if (p.length > 0) {
+                document.getElementById('hiddenProd').value = p.map(i => i.name).join(', ');
+                document.getElementById('hiddenTotal').value = p.reduce((s, i) => s + parseFloat(i.price), 0).toFixed(2) + " TND";
+            }
+        };
+
+        document.getElementById('orderForm').onsubmit = function() {
+            let p = JSON.parse(localStorage.getItem('panier')) || [];
+            let s = JSON.parse(localStorage.getItem('stocks_parfums')) || {};
+            
+            // Éliminer du stock
+            p.forEach(item => { if (s[item.name]) s[item.name] -= 1; });
+            localStorage.setItem('stocks_parfums', JSON.stringify(s));
+
+            // Vider le panier
+            setTimeout(() => { localStorage.removeItem('panier'); }, 1000);
+        };
+    </script>
+</body>
+</html>

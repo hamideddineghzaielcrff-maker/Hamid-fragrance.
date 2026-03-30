@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nos Maisons | Hamid Fragrance</title>
+    <style>
+        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        header { background: #000; color: #d4af37; padding: 40px 20px; text-align: center; border-bottom: 1px solid #1a1a1a; position: sticky; top: 0; z-index: 100; }
+        h1 { margin: 0; font-weight: 300; letter-spacing: 8px; text-transform: uppercase; font-size: 1.5rem; }
+        .sub-nav { margin-top: 20px; display: flex; justify-content: center; gap: 30px; }
+        .sub-nav a { color: #888; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; }
+        .sub-nav a:hover { color: #d4af37; }
+        .brands-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; padding: 30px; max-width: 1200px; margin: auto; }
+        @media (min-width: 768px) { .brands-grid { grid-template-columns: repeat(4, 1fr); } }
+        .brand-card { background: #0a0a0a; color: #d4af37; padding: 45px 20px; border-radius: 5px; text-align: center; border: 1px solid #1a1a1a; cursor: pointer; transition: 0.4s; text-transform: uppercase; letter-spacing: 4px; }
+        .brand-card:hover { border-color: #d4af37; transform: translateY(-5px); }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>HAMID FRAGRANCE</h1>
+        <div class="sub-nav">
+            <a href="index.html">Accueil</a>
+            <a href="produits.html">Tout Voir</a>
+            <a href="panier.html">Mon Panier</a>
+        </div>
+    </header>
+    <div class="brands-grid" id="brandsContainer"></div>
+
+    <script src="database.js"></script>
+    <script>
+        const container = document.getElementById('brandsContainer');
+        if (typeof database !== 'undefined') {
+            const brands = [...new Set(database.map(p => p.brand))].sort();
+            brands.forEach(brand => {
+                container.innerHTML += `
+                    <div class="brand-card" onclick="window.location.href='produits.html?brand=${encodeURIComponent(brand)}'">
+                        <h3>${brand}</h3>
+                        <p style="font-size:9px; color:#444; margin-top:10px;">DÉCOUVRIR</p>
+                    </div>`;
+            });
+        }
+    </script>
+</body>
+</html>

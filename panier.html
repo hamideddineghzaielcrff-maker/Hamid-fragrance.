@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Panier | Hamid Fragrance</title>
+    <style>
+        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+        
+        /* Header */
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px; margin-bottom: 20px; }
+        .header a { color: #d4af37; text-decoration: none; font-size: 0.8rem; letter-spacing: 1px; }
+
+        /* Bouton Vider discret */
+        .btn-clear-trigger {
+            background: none; border: 1px solid #333; color: #555;
+            padding: 8px 15px; cursor: pointer; text-transform: uppercase;
+            font-size: 0.6rem; letter-spacing: 1px; border-radius: 4px;
+            display: block; margin: 0 auto 20px auto; transition: 0.3s;
+        }
+        .btn-clear-trigger:hover { border-color: #d4af37; color: #d4af37; }
+
+        /* Liste des articles */
+        .item-cart { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: #0a0a0a; border: 1px solid #1a1a1a; 
+            padding: 15px; margin-bottom: 10px; border-radius: 4px; 
+        }
+        .item-info h4 { margin: 0; font-size: 0.9rem; font-weight: 300; }
+        .item-info small { color: #d4af37; font-size: 0.8rem; display: block; margin-top: 5px; }
+        
+        .qty-controls { display: flex; align-items: center; gap: 12px; }
+        .qty-btn { 
+            background: none; border: 1px solid #d4af37; color: #d4af37; 
+            width: 26px; height: 26px; cursor: pointer; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        .remove-link { color: #ff4d4d; font-size: 0.6rem; cursor: pointer; background: none; border: none; margin-top: 10px; text-transform: uppercase; padding: 0; }
+
+        /* Fenêtre de Confirmation (Modal) */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000;
+        }
+        .modal-box {
+            background: #0a0a0a; border: 1px solid #d4af37; padding: 30px;
+            text-align: center; border-radius: 8px; max-width: 300px; width: 80%;
+        }
+        .modal-box p { color: #fff; font-size: 0.9rem; margin-bottom: 25px; letter-spacing: 1px; }
+        .modal-btns { display: flex; gap: 10px; }
+        .btn-confirm { flex: 1; padding: 10px; border: none; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; border-radius: 4px; }
+        .btn-yes { background: #d4af37; color: #000; }
+        .btn-no { background: #1a1a1a; color: #fff; border: 1px solid #333; }
+
+        /* Footer */
+        .total-box { margin-top: 30px; text-align: right; border-top: 1px solid #1a1a1a; padding-top: 20px; }
+        .total-price { color: #d4af37; font-size: 1.3rem; font-weight: bold; margin-bottom: 20px; display: block; }
+        .btn-order { width: 100%; background: #d4af37; color: #000; border: none; padding: 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-box">
+            <p>Vider tout le panier ?</p>
+            <div class="modal-btns">
+                <button class="btn-confirm btn-no" onclick="closeModal()">NON</button>
+                <button class="btn-confirm btn-yes" onclick="confirmClear()">OUI</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="header">
+        <a href="produits.html">← BOUTIQUE</a>
+        <h2 style="color: #d4af37; font-size: 0.9rem; margin: 0; letter-spacing: 2px;">MON PANIER</h2>
+    </div>
+
+    <button id="clearBtn" class="btn-clear-trigger" onclick="openModal()">Vider le panier</button>
+
+    <div id="cartList"></div>
+
+    <div id="cartFooter" class="total-box">
+        <span class="total-price" id="totalDisplay">0.00 TND</span>
+        <button class="btn-order" onclick="window.location.href='commande.html'">PASSER LA COMMANDE</button>
+    </div>
+
+    <script>
+        function updateCart() {
+            let panier = JSON.parse(localStorage.getItem('panier')) || [];
+            const container = document.getElementById('cartList');
+            const footer = document.getElementById('cartFooter');
+            const clearBtn = document.getElementById('clearBtn');
+
+            if (panier.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#555; margin-top:50px;">Votre panier est vide.</p>';
+                footer.style.display = 'none';
+                clearBtn.style.display = 'none';
+                return;
+            }
+
+            footer.style.display = 'block';
+            clearBtn.style.display = 'block';
+            container.innerHTML = "";
+
+            let group = {};
+            panier.forEach(item => {
+                group[item.name] = group[item.name] ? { ...item, q: group[item.name].q + 1 } : { ...item, q: 1 };
+            });
+
+            let total = 0;
+            for (let key in group) {
+                let it = group[key];
+                total += parseFloat(it.price) * it.q;
+                container.innerHTML += `
+                    <div class="item-cart">
+                        <div class="item-info">
+                            <h4>${it.name}</h4>
+                            <small>${it.price} TND</small>
+                            <button class="remove-link" onclick="removeItem('${it.name}')">Supprimer</button>
+                        </div>
+                        <div class="qty-controls">
+                            <button class="qty-btn" onclick="changeQty('${it.name}', -1)">-</button>
+                            <span style="min-width:20px; text-align:center;">${it.q}</span>
+                            <button class="qty-btn" onclick="changeQty('${it.name}', 1)">+</button>
+                        </div>
+                    </div>`;
+            }
+            document.getElementById('totalDisplay').innerText = "Total: " + total.toFixed(2) + " TND";
+        }
+
+        // Fonctions de la Modale Personnalisée
+        function openModal() { document.getElementById('confirmModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('confirmModal').style.display = 'none'; }
+        
+        function confirmClear() {
+            localStorage.removeItem('panier');
+            closeModal();
+            updateCart();
+        }
+
+        function changeQty(name, d) {
+            let p = JSON.parse(localStorage.getItem('panier'));
+            if (d === 1) { p.push(p.find(i => i.name === name)); } 
+            else { let idx = p.findIndex(i => i.name === name); if (idx !== -1) p.splice(idx, 1); }
+            localStorage.setItem('panier', JSON.stringify(p));
+            updateCart();
+        }
+
+        function removeItem(name) {
+            let p = JSON.parse(localStorage.getItem('panier')).filter(i => i.name !== name);
+            localStorage.setItem('panier', JSON.stringify(p));
+            updateCart();
+        }
+
+        window.onload = updateCart;
+    </script>
+</body>
+</html>
