@@ -9,6 +9,9 @@
         .sub-nav { display: flex; justify-content: space-between; margin-bottom: 30px; border-bottom: 1px solid #1a1a1a; padding-bottom: 10px; }
         .sub-nav a { color: #d4af37; text-decoration: none; font-size: 0.8rem; letter-spacing: 1px; }
         
+        .brand-header { text-align: center; margin-bottom: 30px; }
+        .brand-header h2 { color: #d4af37; text-transform: uppercase; letter-spacing: 3px; font-weight: 300; margin: 0; }
+
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
         .card { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 15px; text-align: center; border-radius: 4px; transition: 0.3s; position: relative; }
         .card:hover { border-color: #d4af37; }
@@ -23,7 +26,7 @@
         .btn-buy:hover:not([disabled]) { background: #d4af37; color: #000; }
         .btn-buy[disabled] { border-color: #333; color: #333; cursor: not-allowed; }
 
-        /* Notification Luxe (Toast) */
+        /* Notification Toast */
         #toast {
             position: fixed; top: 20px; right: 20px; background: #0a0a0a; color: #d4af37;
             border: 1px solid #d4af37; padding: 15px 25px; border-radius: 4px;
@@ -43,17 +46,39 @@
         <a href="panier.html">MON PANIER 🛒</a>
     </div>
 
+    <div class="brand-header">
+        <h2 id="brandTitle">NOS COLLECTIONS</h2>
+    </div>
+
     <div class="grid" id="fullContainer"></div>
 
     <script src="database.js"></script>
+    
     <script>
-        // Initialisation du stock
+        // --- 1. GESTION DU STOCK (VERSION AUTO-RESTOCK) ---
+        const VERSION_ACTUELLE = "1.2"; 
         let stocks = JSON.parse(localStorage.getItem('stocks_parfums')) || {};
-        if (Object.keys(stocks).length === 0) {
+        let vSaved = localStorage.getItem('v_stock_hamid');
+
+        if (vSaved !== VERSION_ACTUELLE) {
             database.forEach(p => { stocks[p.name] = 100; });
             localStorage.setItem('stocks_parfums', JSON.stringify(stocks));
+            localStorage.setItem('v_stock_hamid', VERSION_ACTUELLE);
         }
 
+        // --- 2. RÉCUPÉRATION DU FILTRE MARQUE DANS L'URL ---
+        const params = new URLSearchParams(window.location.search);
+        const selectedBrand = params.get('brand');
+
+        // --- 3. FILTRAGE DE LA LISTE ---
+        let listToShow = database;
+        if (selectedBrand) {
+            // On ne garde que les parfums dont la marque correspond au lien cliqué
+            listToShow = database.filter(p => p.brand.toLowerCase() === selectedBrand.toLowerCase());
+            document.getElementById('brandTitle').innerText = "MAISON " + selectedBrand;
+        }
+
+        // --- 4. FONCTIONS ---
         function showToast(msg) {
             const t = document.getElementById('toast');
             t.innerText = msg;
@@ -72,22 +97,27 @@
             showToast(nom + " ajouté au panier ✨");
         }
 
+        // --- 5. AFFICHAGE DES PRODUITS FILTRÉS ---
         const container = document.getElementById('fullContainer');
-        database.forEach(p => {
-            let s = stocks[p.name] || 0;
-            let dispo = s > 0;
-            container.innerHTML += `
-                <div class="card" style="${dispo ? '' : 'opacity: 0.5;'}">
-                    <div style="font-size:0.6rem; color:#d4af37; text-transform:uppercase;">${p.brand}</div>
-                    <h3 style="font-size:0.9rem; font-weight:300;">${p.name}</h3>
-                    <span class="price">${p.price} TND</span>
-                    <div class="stock-tag">Stock: ${s}</div>
-                    <button class="btn-buy" ${dispo ? '' : 'disabled'} 
-                        onclick="ajouterAuPanier('${p.name.replace(/'/g, "\\'")}', '${p.price}')">
-                        ${dispo ? 'ACHETER' : 'ÉPUISÉ'}
-                    </button>
-                </div>`;
-        });
+        if (listToShow.length === 0) {
+            container.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#555;'>Aucun parfum trouvé pour cette maison.</p>";
+        } else {
+            listToShow.forEach(p => {
+                let s = stocks[p.name] || 0;
+                let dispo = s > 0;
+                container.innerHTML += `
+                    <div class="card" style="${dispo ? '' : 'opacity: 0.5;'}">
+                        <div style="font-size:0.6rem; color:#d4af37; text-transform:uppercase;">${p.brand}</div>
+                        <h3 style="font-size:0.9rem; font-weight:300;">${p.name}</h3>
+                        <span class="price">${p.price} TND</span>
+                        <div class="stock-tag">Stock: ${s}</div>
+                        <button class="btn-buy" ${dispo ? '' : 'disabled'} 
+                            onclick="ajouterAuPanier('${p.name.replace(/'/g, "\\'")}', '${p.price}')">
+                            ${dispo ? 'ACHETER' : 'ÉPUISÉ'}
+                        </button>
+                    </div>`;
+            });
+        }
     </script>
 </body>
 </html>
